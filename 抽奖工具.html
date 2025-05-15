@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>概率抽奖工具</title>
+    <style>
+        /* 基础样式 */
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 20px auto; padding: 20px; }
+        .prize-item { margin: 10px 0; display: flex; gap: 10px; align-items: center; }
+        #result { font-size: 24px; margin: 20px 0; padding: 15px; background: #f0f0f0; text-align: center; }
+        button { padding: 8px 16px; cursor: pointer; background: #4CAF50; color: white; border: none; border-radius: 4px; }
+        button:hover { background: #45a049; }
+    </style>
+</head>
+<body>
+    <h1>自定义抽奖程序</h1>
+    
+    <!-- 奖池配置区 -->
+    <div id="prizePool">
+        <div class="prize-item">
+            <input type="text" placeholder="奖品名称" class="prize-name">
+            <input type="number" placeholder="概率%" min="0" max="100" class="probability">
+            <button onclick="removePrize(this)">删除</button>
+        </div>
+    </div>
+    
+    <button onclick="addPrize()">+ 添加奖品</button>
+    <button onclick="startLottery()">开始抽奖</button>
+    <div id="result"></div>
+
+    <script>
+        // 动态添加奖品项
+        function addPrize() {
+            const newItem = document.createElement('div');
+            newItem.className = 'prize-item';
+            newItem.innerHTML = `
+                <input type="text" placeholder="奖品名称" class="prize-name">
+                <input type="number" placeholder="概率%" min="0" max="100" class="probability">
+                <button onclick="removePrize(this)">删除</button>
+            `;
+            document.getElementById('prizePool').appendChild(newItem);
+        }
+
+        // 删除奖品项
+        function removePrize(button) {
+            button.parentElement.remove();
+        }
+
+        // 核心抽奖算法
+        function startLottery() {
+            const items = document.querySelectorAll('.prize-item');
+            let totalProb = 0;
+            const prizes = [];
+
+            // 数据收集与验证
+            items.forEach(item => {
+                const name = item.querySelector('.prize-name').value;
+                const prob = parseFloat(item.querySelector('.probability').value) || 0;
+                if (name && prob > 0) {
+                    prizes.push({ name, prob });
+                    totalProb += prob;
+                }
+            });
+
+            // 概率校验
+            if (totalProb > 100) {
+                alert('总概率不能超过100%！当前总概率：' + totalProb + '%');
+                return;
+            }
+            if (prizes.length === 0) {
+                alert('请至少配置一个有效奖品！');
+                return;
+            }
+
+            // 执行抽奖
+            const random = Math.random() * 100;
+            let accumulated = 0;
+            let result = '未中奖';
+
+            for (const prize of prizes) {
+                accumulated += prize.prob;
+                if (random <= accumulated) {
+                    result = prize.name;
+                    break;
+                }
+            }
+
+            // 显示结果（带动画）
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.animation = 'none';
+            setTimeout(() => {
+                resultDiv.style.animation = 'blink 1s';
+                resultDiv.textContent = `恭喜获得：${result}！`;
+            }, 10);
+        }
+    </script>
+
+    <!-- 简单动画 -->
+    <style>
+        @keyframes blink {
+            0% { opacity: 0; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</body>
+</html>
