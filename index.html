@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notion抽奖小程序</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Notion 数据库抽奖</h1>
+            <p>从Notion复制表格数据 (至少包含"名称"和"稀有度"两列)，粘贴到下方。</p>
+        </header>
+
+        <section id="data-import-section">
+            <h2>1. 导入数据</h2>
+            <textarea id="notion-data" placeholder="在此粘贴Notion表格数据 (Tab分隔，例如：\n奖品A	🌟🌟🌟\n奖品B	🌟🌟\n奖品C	🌟🌟🌟🌟🌟)"></textarea>
+            <button id="import-button">导入并设置基础概率</button>
+            <p id="import-status"></p>
+        </section>
+
+        <section id="probability-settings-section" class="hidden">
+            <h2>2. 调整概率 (可选)</h2>
+            <p>以下乘数将影响对应稀有度奖品的中奖权重。默认为1。</p>
+            <div class="probability-controls">
+                <div>
+                    <label for="prob-2star">🌟🌟 概率乘数:</label>
+                    <input type="number" id="prob-2star" value="1.2" step="0.1" min="0.1"> 
+                    <span>(推荐略高, 作为补充)</span>
+                </div>
+                <div>
+                    <label for="prob-3star">🌟🌟🌟 概率乘数:</label>
+                    <input type="number" id="prob-3star" value="1.0" step="0.1" min="0.1">
+                </div>
+                <div>
+                    <label for="prob-4star">🌟🌟🌟🌟 概率乘数:</label>
+                    <input type="number" id="prob-4star" value="1.0" step="0.1" min="0.1">
+                </div>
+            </div>
+            <button id="apply-prob-button">应用概率调整</button>
+        </section>
+
+        <section id="lottery-section" class="hidden">
+            <h2>3. 开始抽奖</h2>
+            <div class="draw-buttons">
+                <button id="draw-1">抽 1 次</button>
+                <button id="draw-10">抽 10 次 (送 1 次)</button>
+            </div>
+            <p id="feedback-message" class="feedback"></p>
+        </section>
+
+        <section id="results-section" class="hidden">
+            <h2>4. 抽奖结果</h2>
+            <div class="stats">
+                <span>本次已抽次数: <span id="total-draws">0</span></span>
+            </div>
+            <div class="table-wrapper">
+                <table id="history-table">
+                    <thead>
+                        <tr>
+                            <th>序号</th>
+                            <th>奖品名称</th>
+                            <th>稀有度</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- 抽奖记录将在此处生成 -->
+                    </tbody>
+                </table>
+            </div>
+            <button id="copy-history-button">复制表格到剪贴板 (TSV)</button>
+            <p id="copy-status" class="feedback"></p>
+        </section>
+
+        <footer>
+            <p>小提示：关闭页面后，本次抽奖记录将清空。</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
